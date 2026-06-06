@@ -1,0 +1,159 @@
+/* =============================================================================
+   styles.css — design tokens, glass/glow recipes, motion utilities.
+   Dark theme only.
+   ============================================================================= */
+
+:root {
+  /* color */
+  --bg-main: #050816;
+  --bg-card: #0b1024;
+  --bg-card-2: #0e1430;
+  --primary-blue: #2563eb;
+  --electric-cyan: #22d3ee;
+  --accent-red: #ef4444;
+  --gold: #facc15;
+  --soft-white: #f8fafc;
+  --muted-text: #94a3b8;
+  --border-glass: rgba(148, 163, 184, 0.14);
+
+  /* type */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* radii / spacing / elevation */
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --section-pad-y: clamp(5rem, 12vh, 9rem);
+  --container-max: 1200px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  color: var(--soft-white);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root { overflow-x: hidden; }
+
+body.pitch-locked { overscroll-behavior: none; cursor: default; }
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.05; margin: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+::selection { background: rgba(34, 211, 238, 0.25); }
+
+/* Ambient background field */
+.bg-field {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(60vw 60vw at 15% -10%, rgba(37, 99, 235, 0.18), transparent 60%),
+    radial-gradient(50vw 50vw at 100% 10%, rgba(34, 211, 238, 0.10), transparent 55%),
+    radial-gradient(60vw 60vw at 50% 120%, rgba(250, 204, 21, 0.05), transparent 60%);
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.4;
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 80%);
+}
+
+/* ---------- glass & glow recipes (used everywhere) ---------- */
+.glass {
+  background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.04), 0 18px 50px -30px rgba(0, 0, 0, 0.8);
+}
+.glow {
+  position: relative;
+}
+.glow::after {
+  content: "";
+  position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+  background: radial-gradient(60% 60% at 50% 0%, rgba(34, 211, 238, 0.22), transparent 70%);
+  filter: blur(14px); opacity: 0.8; pointer-events: none;
+}
+.glow-gold::after { background: radial-gradient(60% 60% at 50% 0%, rgba(250, 204, 21, 0.22), transparent 70%); }
+
+/* ---------- layout helpers ---------- */
+.container { width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+.section { position: relative; z-index: 1; padding-block: var(--section-pad-y); scroll-margin-top: 84px; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--electric-cyan);
+}
+.eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--electric-cyan); opacity: 0.6; }
+.eyebrow.gold { color: var(--gold); }
+.eyebrow.gold::before { background: var(--gold); }
+.eyebrow.red { color: var(--accent-red); }
+.eyebrow.red::before { background: var(--accent-red); }
+
+.h-display { font-size: clamp(2.5rem, 6vw, 4.5rem); letter-spacing: -0.02em; }
+.h-2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; }
+.lead { font-size: clamp(1.05rem, 2vw, 1.25rem); color: var(--muted-text); line-height: 1.6; text-wrap: pretty; }
+.caption { font-size: 0.875rem; color: var(--muted-text); }
+.body { font-size: 1rem; color: #cbd5e1; line-height: 1.6; text-wrap: pretty; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+  padding: 0.85rem 1.5rem; border-radius: var(--radius-pill);
+  font-family: var(--font-display); font-weight: 500; font-size: 0.98rem;
+  border: 1px solid transparent; transition: transform 0.25s var(--ease, ease), box-shadow 0.25s ease, background 0.25s ease;
+}
+.btn:focus-visible { outline: 2px solid var(--electric-cyan); outline-offset: 3px; }
+.btn-primary {
+  background: linear-gradient(180deg, #3b82f6, var(--primary-blue));
+  color: white; box-shadow: 0 12px 30px -12px rgba(37, 99, 235, 0.8);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.9); }
+.btn-ghost { background: rgba(148, 163, 184, 0.06); border-color: var(--border-glass); color: var(--soft-white); }
+.btn-ghost:hover { transform: translateY(-2px); border-color: rgba(34, 211, 238, 0.4); }
+
+/* ---------- focus rings ---------- */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--electric-cyan); outline-offset: 3px; border-radius: 6px;
+}
+
+/* ---------- reveal-on-scroll motion ---------- */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s var(--ease, cubic-bezier(0.22,1,0.36,1)), transform 0.6s var(--ease, cubic-bezier(0.22,1,0.36,1)); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* pill / chip */
+.chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.45rem 0.85rem; border-radius: var(--radius-pill);
+  background: rgba(148, 163, 184, 0.07); border: 1px solid var(--border-glass);
+  font-size: 0.85rem; color: #cbd5e1;
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .anim-loop, .pulse, .dash-flow, .orbit { animation: none !important; }
+  .btn:hover, .btn:hover { transform: none !important; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* shared keyframes (loops disabled under reduced motion via .anim-loop guard) */
+@keyframes pulseGlow { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes dashFlow { to { stroke-dashoffset: -1000; } }
+@keyframes spinSlow { to { transform: rotate(360deg); } }

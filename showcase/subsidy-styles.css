@@ -1,0 +1,109 @@
+/* =============================================================================
+   subsidy-styles.css — the Block Subsidy portal layer.
+   Reuses tokens + most language from explainer/styles.css and showcase/sc-styles.css
+   (--itc cyan, --btc orange, glass cards, sc-section / sc-kicker / sc-h / sc-sub,
+   chart-wrap, deck, btn-itc/btc). Adds only the subsidy-specific UI: the lifetime
+   scrubber, the four-phase ribbon, the big reward readout, the supply counter,
+   the "truth" reveal cards, and the real-source code block.
+   ============================================================================= */
+
+:root {
+  --ramp:  #38bdf8;   /* phase 1 — ramp-up   (sky)    */
+  --peak:  #22d3ee;   /* phase 2 — flat peak (cyan)   */
+  --decay: #a78bfa;   /* phase 3 — decay     (violet) */
+  --floor: #34d399;   /* phase 4 — perpetual floor (green / eco) */
+}
+
+/* ---------- lifetime scrubber ---------- */
+.sub-deck { padding: clamp(1.1rem, 3vw, 1.6rem); border-radius: var(--radius-card); border: 1px solid var(--border-glass); background: linear-gradient(165deg, var(--bg-card), var(--bg-card-2)); }
+
+.sub-readout { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: clamp(0.7rem, 2vw, 1.4rem); align-items: end; }
+@media (max-width: 720px) { .sub-readout { grid-template-columns: 1fr 1fr; gap: 0.9rem 1.2rem; } .sub-readout .ro-reward { grid-column: 1 / -1; } }
+
+.ro-lbl { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted-text); margin-bottom: 0.35rem; }
+.ro-reward .num { font-family: var(--mono); font-weight: 700; font-size: clamp(2.4rem, 7vw, 3.8rem); line-height: 0.95; letter-spacing: -0.02em; color: var(--soft-white); }
+.ro-reward .num small { font-size: 0.34em; color: var(--muted-text); font-weight: 500; letter-spacing: 0; }
+.ro-stat .v { font-family: var(--mono); font-weight: 600; font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--soft-white); }
+.ro-stat .v.accent { color: var(--itc); }
+.ro-stat .sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted-text); margin-top: 0.15rem; }
+
+.phase-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; padding: 0.35rem 0.8rem; border-radius: var(--radius-pill); border: 1px solid currentColor; }
+.phase-badge .pdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+.phase-badge.ramp  { color: var(--ramp); }
+.phase-badge.peak  { color: var(--peak); }
+.phase-badge.decay { color: var(--decay); }
+.phase-badge.floor { color: var(--floor); }
+
+/* the four-phase ribbon (height axis at a glance) */
+.ribbon { margin-top: 1.5rem; }
+.ribbon-track { display: flex; height: 14px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-glass); }
+.ribbon-seg { height: 100%; transition: filter .2s, opacity .2s; }
+.ribbon-seg.ramp  { background: linear-gradient(90deg, color-mix(in srgb, var(--ramp) 30%, transparent), var(--ramp)); }
+.ribbon-seg.peak  { background: var(--peak); }
+.ribbon-seg.decay { background: linear-gradient(90deg, var(--decay), color-mix(in srgb, var(--decay) 28%, transparent)); }
+.ribbon-seg.floor { background: color-mix(in srgb, var(--floor) 38%, transparent); }
+.ribbon-seg.dim { opacity: 0.32; }
+.ribbon-labels { display: flex; margin-top: 0.5rem; font-family: var(--mono); font-size: 0.64rem; color: var(--muted-text); }
+.ribbon-labels span { text-align: center; }
+
+/* the slider itself */
+.sub-slider-wrap { position: relative; margin-top: 1.2rem; }
+.sub-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 99px; outline: none;
+  background: linear-gradient(90deg, var(--ramp), var(--peak) 37%, var(--decay) 80%, var(--floor)); }
+.sub-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--itc); box-shadow: 0 4px 16px -2px rgba(0,0,0,0.75); cursor: pointer; }
+.sub-slider::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--itc); cursor: pointer; }
+.sub-scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.64rem; color: var(--muted-text); margin-top: 0.45rem; }
+
+.sub-jumps { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+.sub-jump { font-family: var(--font-display); font-size: 0.8rem; padding: 0.45rem 0.85rem; border-radius: var(--radius-pill); border: 1px solid var(--border-glass); background: rgba(148,163,184,0.05); color: var(--soft-white); transition: border-color .2s, transform .15s, background .2s; white-space: nowrap; }
+.sub-jump:hover { transform: translateY(-1px); border-color: var(--itc-line); background: var(--itc-soft); }
+.sub-jump.playing { border-color: var(--itc-line); background: var(--itc-soft); color: var(--itc); }
+
+/* ---------- the curve chart ---------- */
+.curve-foot { font-family: var(--mono); font-size: 0.7rem; color: var(--muted-text); margin-top: 0.6rem; text-wrap: pretty; }
+.curve-foot b.ramp { color: var(--ramp); } .curve-foot b.peak { color: var(--peak); }
+.curve-foot b.decay { color: var(--decay); } .curve-foot b.floor { color: var(--floor); }
+
+/* ---------- truth reveal cards ---------- */
+.truths { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (max-width: 760px) { .truths { grid-template-columns: 1fr; } }
+.truth { padding: 1.3rem 1.4rem; border-radius: var(--radius-card); border: 1px solid var(--border-glass); background: linear-gradient(165deg, var(--bg-card), var(--bg-card-2)); position: relative; overflow: hidden; transition: border-color .25s, transform .2s; }
+.truth::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--decay); opacity: 0.8; }
+.truth.t-lie::before { background: var(--warn); } .truth.t-cliff::before { background: var(--btc); }
+.truth.t-floor::before { background: var(--floor); } .truth.t-cap::before { background: var(--itc); }
+.truth:hover { transform: translateY(-3px); border-color: var(--itc-line); }
+.truth .tnum { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; color: var(--muted-text); }
+.truth h3 { font-size: 1.18rem; margin: 0.4rem 0 0.5rem; letter-spacing: -0.01em; }
+.truth p { font-size: 0.93rem; color: #cbd5e1; line-height: 1.6; text-wrap: pretty; }
+.truth .myth { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; font-family: var(--mono); font-size: 0.8rem; }
+.truth .myth .was { color: var(--muted-text); text-decoration: line-through; }
+.truth .myth .arrow { color: var(--muted-text); }
+.truth .myth .is { color: var(--floor); font-weight: 700; }
+.truth .tbtn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-display); font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: var(--radius-pill); border: 1px solid var(--itc-line); background: var(--itc-soft); color: var(--itc); transition: transform .15s; cursor: pointer; }
+.truth .tbtn:hover { transform: translateY(-1px); }
+
+/* ---------- scarcity contrast (BTC vs ITC philosophies) ---------- */
+.scarcity-foot { display: flex; gap: 1.4rem; flex-wrap: wrap; font-family: var(--mono); font-size: 0.74rem; margin-top: 0.7rem; }
+.scarcity-foot .lk { display: inline-flex; align-items: center; gap: 0.45rem; }
+.scarcity-foot .swatch { width: 16px; height: 3px; border-radius: 2px; }
+
+/* ---------- real source block ---------- */
+.src-block { border-radius: var(--radius-card); border: 1px solid var(--border-glass); background: #04060f; overflow: hidden; }
+.src-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--border-glass); font-family: var(--mono); font-size: 0.76rem; color: var(--muted-text); }
+.src-head .dots { display: flex; gap: 0.35rem; }
+.src-head .dots i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.src-head .fname { color: var(--soft-white); }
+.src-head .real { margin-left: auto; color: var(--floor); display: inline-flex; align-items: center; gap: 0.35rem; }
+.src-pre { margin: 0; padding: 1.1rem 1.2rem; overflow-x: auto; font-family: var(--mono); font-size: clamp(0.7rem, 1.6vw, 0.82rem); line-height: 1.65; color: #cbd5e1; }
+.src-pre .c-key { color: #c084fc; } .src-pre .c-num { color: #67e8f9; } .src-pre .c-str { color: #fbbf24; }
+.src-pre .c-com { color: #64748b; font-style: italic; } .src-pre .c-fn { color: #38bdf8; }
+.src-pre .c-flag { background: rgba(251,191,36,0.14); border-bottom: 1px dashed var(--warn); border-radius: 2px; }
+.src-pre .c-floor { background: rgba(52,211,153,0.14); border-radius: 2px; }
+
+/* author credit */
+.byline { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--mono); font-size: 0.74rem; color: var(--muted-text); }
+.byline b { color: var(--itc); }
+
+@media (prefers-reduced-motion: reduce) {
+  .truth, .ribbon-seg, .sub-slider { transition: none !important; }
+}
